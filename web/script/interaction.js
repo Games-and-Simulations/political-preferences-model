@@ -49,19 +49,29 @@ var Interaction = {
 	}),
 	
 	selectionHandler: function(e) {
-		for (var i = 0; i < e.selected.length; i++) {
-			// mark it as selected so it cannot be selected more than once
-			e.selected[i].isSelected = true;
-			var keys = e.selected[i].getProperties();
-			changeChart(this.chart, keys.obec, keys.momc, keys.okrsek, addToDataset);
-		}
-		for (var i = 0; i < e.deselected.length; i++) {
-			e.deselected[i].isSelected = false;
-			var keys = e.deselected[i].getProperties();
-			changeChart(this.chart, keys.obec, keys.momc, keys.okrsek, deleteFromDataset);
-		}	
 		
+		if (e.selected.length > 0) {
+			var identificationArray = [];
+			for (var i = 0; i < e.selected.length; i++) {
+				// mark it as selected so it cannot be selected more than once
+				e.selected[i].isSelected = true;
+				var keys = e.selected[i].getProperties();
+				identificationArray.push([keys.obec, keys.momc, keys.okrsek]);
+			}
+			changeChart(this.chart, identificationArray, addToDataset);
+		}
+		
+		if (e.deselected.length > 0) {
+			var identificationArray = [];
+			for (var i = 0; i < e.deselected.length; i++) {
+				e.deselected[i].isSelected = false;
+				var keys = e.deselected[i].getProperties();
+				identificationArray.push([keys.obec, keys.momc, keys.okrsek]);
+			}	
+			changeChart(this.chart, identificationArray, deleteFromDataset);
+		}
 		if (e.selected.length == 1 && Interaction.mode == 'click') {
+			// record info of the last selected feature
 			var keys = e.selected[0].getProperties();
 			this.information.setSelected(keys.obec, keys.momc, keys.okrsek);
 		}
@@ -69,10 +79,25 @@ var Interaction = {
 	
 };
 
-function callToDatabase(chart, obec, momc, okrsek, callback) {
+function callToDatabase(chart, identificationArray, callback) {
 	var requests = [];
-	requests.push($.get("get-result2017.php?obec="+obec+"&momc="+momc+"&okrsek="+okrsek));
-	requests.push($.get("get-prediction.php?obec="+obec+"&momc="+momc+"&okrsek="+okrsek+"&modelid="+Interaction.model));
+	
+	requests.push($.ajax({
+		type: "POST",
+		url: "get-result2017-bulk.php",
+		data: JSON.stringify({idArray: identificationArray}),
+		contentType: "application/json"		
+	}));
+	requests.push($.ajax({
+		type: "POST",
+		url: "get-prediction-bulk.php",
+		data: JSON.stringify({idArray: identificationArray,
+			modelid: Interaction.model}),
+		contentType: "application/json"
+	}));
+	
+	// Wait for all ajax requests and then call callback function
+	// with server responses as arguments.
 	$.when.apply($, requests).then(callback);
 }
 
@@ -114,8 +139,8 @@ function deleteFromDataset(chart, jsonObj) {
 	dataset.population = prevPopulation - currPopulation;
 }
 
-function changeChart(chart, obec, momc, okrsek, datasetChangeFunction) {
-	callToDatabase(chart, obec, momc, okrsek, function () {
+function changeChart(chart, identificationArray, datasetChangeFunction) {
+	callToDatabase(chart, identificationArray, function () {
 		for (var i = 0; i < arguments.length; i++) {
 			var response;
 			// response from server has 3 items (first being response text), therefore if we only have one request, we are only interested
@@ -129,16 +154,18 @@ function changeChart(chart, obec, momc, okrsek, datasetChangeFunction) {
 				if (i > 0) {break;}
 				response = arguments[0];
 			}
-			if (response == "no-results") {window.alert("no results for: " + obec + " " + momc + " " + okrsek);return;}
-			jsonObj = JSON.parse(response);
-			if (jsonObj.type.startsWith("model")) {
-				datasetChangeFunction(chart, jsonObj);
-				
+			resultArray = JSON.parse(response).resultArray;
+			
+			for (var j = 0; j < resultArray.length; j++) {
+				jsonObj = JSON.parse(resultArray[j]);
+
+				if (jsonObj.type.startsWith("model")) {
+					datasetChangeFunction(chart, jsonObj);
+				}
+				if (jsonObj.type.startsWith("snemovna")) {
+					datasetChangeFunction(chart, jsonObj);
+				}
 			}
-			if (jsonObj.type.startsWith("snemovna")) {
-				datasetChangeFunction(chart, jsonObj);
-			}
-			chart.update();
 			Information.setVoters(chart.data.datasets[0].population);
 		}
 		chart.update();

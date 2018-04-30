@@ -35,6 +35,6 @@ var map = new ol.Map({
 		projection: 'EPSG:3857',
 		center: ol.proj.fromLonLat([14.30, 50.13]),
 		zoom: 12,
-		minZoom: 12
+		minZoom: 8
 	})
 });

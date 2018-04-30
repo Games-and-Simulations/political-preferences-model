@@ -26,6 +26,6 @@ foreach ($idArray as $id) {
 		}
 	}
 }	
-$jsonObject["predictionArray"] = $jsonArray;
+$jsonObject["resultArray"] = $jsonArray;
 echo json_encode($jsonObject);
 ?>
