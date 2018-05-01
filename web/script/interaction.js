@@ -77,6 +77,7 @@ var INTERACTION = {
 			var keys = e.selected[0].getProperties();
 			this.information.setSelected(keys.obec, keys.momc, keys.okrsek);
 		}
+		this.information.setSelectedCount(e.selected.length, e.deselected.length);
 	}
 	
 };

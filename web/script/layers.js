@@ -1,6 +1,6 @@
 
 
-var vectorLayer = new ol.layer.Vector({
+var VECTORLAYER = new ol.layer.Vector({
 	source: new ol.source.Vector({
 	}),
 	style: new ol.style.Style({
@@ -11,7 +11,7 @@ var vectorLayer = new ol.layer.Vector({
 	})
 });
 
-var drawLayer = new ol.layer.Vector({
+var DRAWLAYER = new ol.layer.Vector({
 	source: new ol.source.Vector({
 	}),
 	style: new ol.style.Style({
@@ -22,14 +22,14 @@ var drawLayer = new ol.layer.Vector({
 	})
 });
 
-var map = new ol.Map({
+var MAP = new ol.Map({
 	target: 'map',
 	layers: [
 		new ol.layer.Tile({
 			source: new ol.source.OSM()
 		}),
-		vectorLayer,
-		drawLayer
+		VECTORLAYER,
+		DRAWLAYER
 	],
 	view: new ol.View({
 		projection: 'EPSG:3857',

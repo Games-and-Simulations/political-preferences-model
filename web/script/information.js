@@ -2,13 +2,16 @@
 var INFORMATION = {
 	
 	loaded: 0,
-		
-	selected: false,
+	
+	selectedCount: 0,
+
+	voters: 0,
+	
+	lastSelected: false,
 	okrsek: false,
 	momc: false,
 	obec: false,
-		
-	voters: 0,
+	
 	
 	init: function(interaction) {
 		this.registerControls(interaction);
@@ -38,7 +41,7 @@ var INFORMATION = {
 	},
 
 	setSelected: function(obec, momc, okrsek) {
-		this.selected = true;
+		this.lastSelected = true;
 		this.obec = obec;
 		this.momc = momc;
 		this.okrsek = okrsek;
@@ -46,7 +49,12 @@ var INFORMATION = {
 	},
 	
 	unsetSelected: function() {
-		this.selected = false;
+		this.lastSelected = false;
+		this.update();
+	},
+	
+	setSelectedCount: function(add, minus) {
+		this.selectedCount += add - minus;
 		this.update();
 	},
 	
@@ -57,11 +65,12 @@ var INFORMATION = {
 	
 	update: function() {
 		document.getElementById("loaded").innerHTML = this.loaded;
-		if (this.selected) {
-			document.getElementById("selected").innerHTML = 'Obec: ' + this.obec 
+		document.getElementById("selected").innerHTML = this.selectedCount;
+		if (this.lastSelected) {
+			document.getElementById("lastselected").innerHTML = 'Obec: ' + this.obec 
 				+ ' | Momc: ' + this.momc + ' | Okrsek: ' + this.okrsek;
 		} else {
-			document.getElementById("selected").innerHTML = '';
+			document.getElementById("lastselected").innerHTML = '';
 		}
 		document.getElementById("population").innerHTML = this.voters;
 	}	
