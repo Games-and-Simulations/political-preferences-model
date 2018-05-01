@@ -38,9 +38,3 @@ def generate_graphs(estimator, modelname):
     estimator.draw_metric_across_folds(metric='root_mean_squared_error', filepath= base + '_10fold')
     estimator.draw_metric_across_folds(metric='root_mean_squared_error', ylim=(0.025, 0.05), filepath= base + '_10fold_ylim(0.025,0.05)')
 
-
-
-
-
-
-

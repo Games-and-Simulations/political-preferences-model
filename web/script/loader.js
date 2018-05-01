@@ -1,20 +1,21 @@
 
-var loader = {
+var LOADER = {
 	// Communication with the Geoserver (Geographic data)
-
+	// - loading and filtering features
+	
+	dbTableName: 'publish',
+	
 	init: function(information, interaction, targetLayer) {
 		this.information = information;
 		this.interaction = interaction;
 		this.targetLayer = targetLayer;
 		this.geoserverWFS = 'http://localhost:8080/geoserver/wfs?service=WFS&' +
-			 'version=1.0.0&request=GetFeature&typeName=okrsek:'+ this.interaction.dbTableName +'&' +
+			 'version=1.0.0&request=GetFeature&typeName=okrsek:'+ this.dbTableName +'&' +
 			 'outputFormat=gml3&srsName=EPSG:3857&';
 	},
 	
 	loadFeaturesInExtent: function(extent) {
-		var url = 'http://localhost:8080/geoserver/wfs?service=WFS&' +
-			'version=1.0.0&request=GetFeature&typeName=okrsek:'+ Interaction.dbTableName +'&' +
-			'outputFormat=gml3&srsName=EPSG:3857&' +
+		var url = this.geoserverWFS + 
 			'bbox=' + extent.join(',') + ',EPSG:3857';
 		var xhr = new XMLHttpRequest();
 		xhr.open('GET', url);

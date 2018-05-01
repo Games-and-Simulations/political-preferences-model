@@ -1,5 +1,5 @@
 
-var Information = {
+var INFORMATION = {
 	
 	loaded: 0,
 		
@@ -9,6 +9,20 @@ var Information = {
 	obec: false,
 		
 	voters: 0,
+	
+	init: function(interaction) {
+		this.registerControls(interaction);
+		this.update();
+	},
+	
+	registerControls: function(interaction) {
+		$('div#controls input[type="radio"]').on('change', function(e) {
+			interaction.changeSelectionMode();
+		});
+		$('div#models input[type="radio"]').on('change', function(e) {
+			interaction.changeModel();
+		});
+	},
 	
 	readModelName: function() {
 		return document.querySelector('input[name="model"]:checked').value;
