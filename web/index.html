@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8"> 
 	<link rel="stylesheet" href="css/ol.css" type="text/css">
-	<link rel="stylesheet" href="css/ui.css" type="text/css">
+	<link rel="stylesheet" href="css/alt.css" type="text/css">
     <script src="lib/ol.js" type="text/javascript"></script>
 	<script src="lib/Chart.bundle.js" type="text/javascript"></script>
 	<script src="lib/jquery-3.3.1.min.js" type="text/javascript"></script>
@@ -11,29 +11,39 @@
   </head>
   <body>
 	<div id="content">
-		<div id="map" class="map"></div>
+		<div id ="map-holder" class="holder">
+			<div id="map" class="map"></div>
+		</div>
+		<div id="canvas-holder" class="holder">
+			<canvas id="resultsChart"></canvas>
+		</div>
 		<div id="panel">
-			<div id="canvas-holder">
-				<canvas id="resultsChart"></canvas>
+			<div class="settings">
+				<div>
+					<h2>Model: </h2>
+				</div>
+				<div>
+					<input type="radio" id="model01" name="model" value="01" checked><label for="model01">Model01</label>
+					<input type="radio" id="model02" name="model" value="02"><label for="model02">Model02</label>
+					<input type="radio" id="model03" name="model" value="03"><label for="model03">Model03</label>
+					<input type="radio" id="model04" name="model" value="04"><label for="model04">Model04</label>
+					<input type="radio" id="model05" name="model" value="05"><label for="model05">Model05</label>
+				</div>
 			</div>
-			<div id="models">
-				<h2>Model: </h2>
-				<input type="radio" id="model01" name="model" value="01" checked><label for="model01">Model01</label>
-				<input type="radio" id="model02" name="model" value="02"><label for="model02">Model02</label>
-				<input type="radio" id="model03" name="model" value="03"><label for="model03">Model03</label>
-				<input type="radio" id="model04" name="model" value="04"><label for="model04">Model04</label>
-				<input type="radio" id="model05" name="model" value="05"><label for="model05">Model05</label>
-			</div>
-			<div id="controls">
-				<h2>Režim výběru: </h2>
-				<input type="radio" id="click" name="selection" value="click" checked><label for="click">Click</label>
-				<input type="radio" id="polygon" name="selection" value="polygon"><label for="polygon">Polygon</label>
+			<div class="settings">
+				<div>
+					<h2>Režim výběru: </h2>
+				</div>
+				<div>
+					<input type="radio" id="click" name="selection" value="click" checked><label for="click">Click</label>
+					<input type="radio" id="polygon" name="selection" value="polygon"><label for="polygon">Polygon</label>
+				</div>
 			</div>
 			<div id="information">
-					<p>Načteno okrsků: <span id="loaded"></span></p>
-					<p>Zvoleno okrsků: <span id="selected"></span></p>
-					<p>Počet voličů: <span id="population"></span></p>
-					<p>Poslední vybraný okrsek: <span id="lastselected"></span></p>
+				<p>Načteno okrsků: <span id="loaded"></span></p>
+				<p>Zvoleno okrsků: <span id="selected"></span></p>
+				<p>Počet voličů: <span id="population"></span></p>
+				<p>Poslední okrsek: <span id="lastselected"></span></p>
 			</div>
 		</div>
 	</div>

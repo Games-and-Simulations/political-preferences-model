@@ -32,3 +32,6 @@ VECTORLAYER.setSource(new ol.source.Vector({
 	strategy: ol.loadingstrategy.bbox
 }));
 
+canvas = document.getElementById("resultsChart");
+
+

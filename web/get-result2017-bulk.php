@@ -20,6 +20,7 @@ foreach ($idArray as $id) {
 		$row = $stmt->fetch(PDO::FETCH_ASSOC);
 		if($row == false) {
 			echo "no-results";
+			exit();
 		} else {
 			$row["type"] = "snemovna2017";
 			array_push($jsonArray, json_encode($row));

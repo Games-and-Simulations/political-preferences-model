@@ -13,7 +13,7 @@ var BARCHART = new Chart(document.getElementById("resultsChart"), {
 				population: 0
 			},
 			{
-				label: "model01",
+				label: "model",
 				data: Array.apply(null, Array(12)).map(Number.prototype.valueOf, 0),
 				backgroundColor: 'rgba(100,0,0,0.8)',
 				borderColor: 'rgba(50,0,0,0.8)',

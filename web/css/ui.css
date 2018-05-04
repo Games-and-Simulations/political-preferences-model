@@ -1,38 +1,37 @@
+* {
+	margin: 0;
+	padding: 0;
+}
 body {
 	background-color: #f7f0d7;
+	min-width: 1024px;
+	min-height: 540px;
 }
-#content {
-	width: 80%;
+.holder {
+	float: left;
+	width: 45%;
+}
+#map-holder {
 	margin: 20px;
-	display: flex;
 }
 #map {
 	height: 500px;
-	width: 50%;
-	margin: 0 3% 0 0;
-	flex: 0 0 65;
-}
-#panel {
-	flex: 1;
 }
 #canvas-holder {
-	margin: 0 0 10px 0;
-	width: 100%;
+	margin: 20px 0 20px 20px;
 	height: 300px;
-	float: left; 
-	border: 2px solid black;
 }
-#models {
-	height: 360px;
-}
-h2 {
-	padding: 0;
-	margin: 0;
+#panel {
+	margin: 20px 0 0 20px;
 	float: left;
 }
-#models input {
-	margin: 13px 3px 0 15px;
+.settings {
+	display: flex;
+	align-items: flex-end;
 }
-#controls input {
-	margin: 13px 3px 0 15px;
+.settings div input {
+	margin: 0px 3px 6px 6px;
+}
+#information {
+	font-size: 18px;
 }
