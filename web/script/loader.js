@@ -39,12 +39,12 @@ var LOADER = {
 				item.isSelected = false;
 				targetSource.addFeature(item);
 			});
-			// Update feature count
+			// Update the feature count
 			this.information.setLoaded(targetSource.getFeatures().length);
 		}
 	},
 	
-	// This function queries geoserver for shapes inside of given polygon
+	// This function queries the geoserver for shapes inside of a given polygon
 	// and selects them. Afterwards it clears the callingLayer.
 	selectFeaturesInsideCoords: function(polygon, callingLayer) {
 		var coordString = this.coordsToString(polygon.getCoordinates()[0]);

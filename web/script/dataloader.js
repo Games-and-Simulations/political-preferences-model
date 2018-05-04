@@ -27,6 +27,7 @@ var DATALOADER = {
 					if (i > 0) {break;}
 					response = arguments[0];
 				}
+
 				resultArray = JSON.parse(response).resultArray;
 				
 				dataLoader.performChartDataChange(chart, resultArray, datasetChangeFunction);
@@ -62,11 +63,11 @@ var DATALOADER = {
 			type: "POST",
 			url: "get-prediction-bulk.php",
 			data: JSON.stringify({idArray: identificationArray,
-				modelid: INTERACTION.model}),
+				modelid: this.interaction.model}),
 			contentType: "application/json"
 		}));
 		
-		// Wait for all ajax requests and then call callback function
+		// Wait for all ajax requests and then call the callback function
 		// with server responses as arguments.
 		$.when.apply($, requests).then(callback);
 	},
