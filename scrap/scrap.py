@@ -43,11 +43,6 @@ url = 'https://volby.cz/pls/ps2017/ps3?xjazyk=CZ'
 
 
 
-# g promenna udrzujici cislo prohledavane obce / mestske casti.
-# To je z toho duvodu, ze stranka volby.cz obsahuje chybu v oznaceni
-# jednotlivych okrsku ve statutarnich mestech.
-# Blize popsano ve funkci process_results.
-gxcislo = False
 # g promenna udrzujici cislo prohledavaneho kraje
 gxkraj = False
 
@@ -140,12 +135,7 @@ def process_results(url, base_okrsek):
         xokrsek = int(query_dict['xokrsek'][0]) - base_okrsek
     if 'xmc'in query_dict:
         xmc = int(query_dict['xmc'][0])
-    else:
-        # Momc cislo neni v URL, ziskame ho z globalni promenne gxcislo.
-        global gxcislo
-        if query_dict['xkraj'][0] == '1': # Praha
-            xmc = int(gxcislo)
-            xobec = 554782
+
     # V pripade statutarnich mest obsahuje server volby.cz chybu.
     # URL parameter xobec ve skutecnosti obsahuje momc cislo (xmc) daneho okrsku.
     # Proto je dulezite z momc cisla ziskat cislo obce. K tomu slouzi funkce translate_momc()
@@ -159,8 +149,7 @@ def process_results(url, base_okrsek):
     statistics = statistics_scrap(tables[0])
     # scrap volebnich vysledku
     results = parse(party_scrap(tables[1:]), get_party_name)
-    
-    #statistics = results = False    
+     
     global gxkraj
     put_into_json(xobec, xokrsek, xmc, gxkraj, statistics, results)
     
@@ -218,11 +207,8 @@ def process_okres_or_momc(url):
             if not a: # radka neobsahuje odkazy, jsme na konci => ukoncit prohledavani
                 return
             else:
-                # Globalni promenna gxcislo udzuje cislo prohledavane obce / mestske casti.
-                # Je nutna, protoze podstranky Prahy neobsahuji informaci o mestske casti (momc).
-                global gxcislo
-                gxcislo = a[0].text.strip()
                 a = a[1]
+                
             # vytvorit odkaz na podstranku obce
             query = a['href']
             chars_to_strip = len(u.path.split('/')[-1])
