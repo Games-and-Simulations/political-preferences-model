@@ -67,8 +67,10 @@ var INFORMATION = {
 		document.getElementById("loaded").innerHTML = this.loaded;
 		document.getElementById("selected").innerHTML = this.selectedCount;
 		if (this.lastSelected) {
+			var momc = this.momc;
+			if (momc == 0) momc = "-"; 
 			document.getElementById("lastselected").innerHTML = 'Obec: ' + this.obec 
-				+ ' | Momc: ' + this.momc + ' | Okrsek: ' + this.okrsek;
+				+ ' | Momc: ' + momc + ' | Okrsek: ' + this.okrsek;
 		} else {
 			document.getElementById("lastselected").innerHTML = '';
 		}
