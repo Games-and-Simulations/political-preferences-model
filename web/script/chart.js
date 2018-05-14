@@ -1,5 +1,5 @@
 
-var BARCHART = new Chart(document.getElementById("resultsChart"), {
+var CHART = new Chart(document.getElementById("resultsChart"), {
 	type: 'bar',
 	data: {
 		labels: ["other","ods","cssd","stan","kscm","zeleni","svobodni","pirati","top09","ano","kducsl","spd"],

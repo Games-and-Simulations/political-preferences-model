@@ -13,18 +13,16 @@ var INFORMATION = {
 	obec: false,
 	
 	
-	init: function(interaction) {
-		this.registerControls(interaction);
+	init: function() {
 		this.update();
 	},
 	
-	registerControls: function(interaction) {
-		$('div#controls input[type="radio"]').on('change', function(e) {
-			interaction.changeSelectionMode();
-		});
-		$('div#models input[type="radio"]').on('change', function(e) {
-			interaction.changeModel();
-		});
+	getModelNameSelector: function() {
+		return 'div#models input[type="radio"]';
+	},
+	
+	getSelectionModeSelector: function() {
+		return 'div#controls input[type="radio"]';
 	},
 	
 	readModelName: function() {

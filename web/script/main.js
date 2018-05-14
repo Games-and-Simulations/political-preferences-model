@@ -1,9 +1,9 @@
 
 // INFORMATION connects program logic with DOM
-INFORMATION.init(INTERACTION);
+INFORMATION.init();
 
 // INTERACTION takes care of user interaction with controls and the map (mostly feature selection)
-INTERACTION.init(INFORMATION, BARCHART, DRAWLAYER, MAP, DATALOADER);
+INTERACTION.init(INFORMATION, CHART, DRAWLAYER, MAP, DATALOADER);
 
 // DATALOADER object is used for downloading of election data 
 // (both actual results and model prediction)

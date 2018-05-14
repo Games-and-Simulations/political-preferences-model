@@ -16,6 +16,7 @@ var INTERACTION = {
 			type: 'Polygon'			
 		});
 		this.registerMap(map);
+		this.registerControls();
 		this.changeSelectionMode();
 		this.SelectClick.on('select', this.selectionHandler, this);
 	},
@@ -25,8 +26,39 @@ var INTERACTION = {
 		map.addInteraction(this.SelectClick);
 	},
 	
+	registerControls: function() {
+		var interaction = this;
+		
+		var modelNameSelector = this.information.getModelNameSelector();
+		$(modelNameSelector).on('change', function(e) {
+			interaction.changeModel();
+		});
+		
+		var selectionModeSelector = this.information.getSelectionModeSelector();
+		$(selectionModeSelector).on('change', function(e) {
+			interaction.changeSelectionMode();
+		});
+	},
+	
 	changeModel: function() {
-		this.model = information.readModelName();
+		var currentSelection = this.SelectClick.getFeatures().getArray();
+		
+		// deselect all in the old model
+		this.SelectClick.dispatchEvent({
+			type: 'select',
+			selected: [],
+			deselected: currentSelection
+		});
+		
+		// change model
+		this.model = this.information.readModelName();
+		
+		// select all with the new model
+		this.SelectClick.dispatchEvent({
+			type: 'select',
+			selected: currentSelection,
+			deselected: []
+		});
 	},
 	
 	changeSelectionMode: function() {
@@ -51,6 +83,7 @@ var INTERACTION = {
 	}),
 	
 	selectionHandler: function(e) {
+		// When features are selected (deselected), add (remove) their results to (from) the chart
 		
 		if (e.selected.length > 0) {
 			var identificationArray = [];
@@ -72,11 +105,13 @@ var INTERACTION = {
 			}	
 			this.dataLoader.changeChart(this.chart, identificationArray, this.dataLoader.deleteFromDataset);
 		}
+		
 		if (e.selected.length == 1 && this.mode == 'click') {
 			// record info of the last selected feature
 			var keys = e.selected[0].getProperties();
 			this.information.setSelected(keys.obec, keys.momc, keys.okrsek);
 		}
+		// record the number of selected features
 		this.information.setSelectedCount(e.selected.length, e.deselected.length);
 	}
 	

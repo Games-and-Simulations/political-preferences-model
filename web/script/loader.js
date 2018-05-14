@@ -30,6 +30,7 @@ var LOADER = {
 		}
 	},	
 	
+	// Add received features to the layer
 	processFeatureResponse: function(xhr) {
 		if (xhr.status == 200) {
 			var targetSource = this.targetLayer.getSource();
