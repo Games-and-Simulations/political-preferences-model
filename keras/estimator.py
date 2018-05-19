@@ -102,10 +102,10 @@ class Estimator:
         Nejprve rozdeli data na testovaci a trenovaci cast podle parametru test_size.
         
         
-        :param inputset: Trenovaci vstupni data.
-        :param outputset: Trenovaci vystupni data.
+        :param inputset: Vstupni data (priklady).
+        :param outputset: Vystupni data (priklady).
         :param subset_in_perc: List hodnot pomeru podmnoziny vuci celkove mnozine dat (v procentech). 
-            Napr. range(10,101,10)
+            Napr. range(10,101,10
         :param test_size: Pomer testovaci mnoziny vuci celku.
         :param split: Splitter objekt z sklearn.model_selection, ktery ridi rozdeleni
             mnoziny dat pro ucely cross-validace.

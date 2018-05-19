@@ -8,15 +8,13 @@ from custom_metrics import root_mean_squared_error as rmse
 
 
 def create_model():
-    model = Sequential()    
-    model.add(Dense(80, activation='relu', input_dim=30))
-    model.add(Dense(80, activation='relu'))
-    model.add(Dense(60, activation='relu'))
-    model.add(Dense(60, activation='relu'))
+    model = Sequential()
+    model.add(Dense(100, activation='relu', input_dim=30))
+    model.add(Dense(100, activation='relu'))
     model.add(Dense(12, activation='softmax'))
     model.compile(optimizer='adam', loss=categorical_crossentropy, metrics=[mae, rmse])
     return model
 
 n_splits= 10
-epochs= 30
-batch_size= 50
+epochs= 50
+batch_size= 30
