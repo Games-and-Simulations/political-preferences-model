@@ -2,10 +2,7 @@ import numpy
 from inspect import getfullargspec
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
-from sklearn.model_selection import GridSearchCV
 from sklearn.model_selection import ShuffleSplit
-from keras.wrappers.scikit_learn import KerasRegressor
-from keras.wrappers.scikit_learn import KerasClassifier
 import utils
 import datetime
 import inspect
@@ -15,7 +12,8 @@ class Estimator:
     def __init__(self, create_model, description=''):
         self.description = description  # voluntary description of data/model
         self.metrics_record = {}
-        self.fold_score_progress = []   # progress of fold evaluation     
+        self.fold_score = []   # progress of fold evaluation     
+        self.fold_scores = []
         self.create_model = create_model
 
 
@@ -53,30 +51,60 @@ class Estimator:
     def train(self, inputset, outputset, split, epochs, batch_size, model_parameters=dict()):
         '''
         Train model created throught self.create_model function with given parameters.
-        If datasets are not given, use default data stored in Estimator.
-        
-        Creates new model every time it is called.
+
         '''
-        self.create_model_wrapper(model_parameters)
         self.n_splits = split.n_splits
         self.epochs = epochs
         self.batch_size = batch_size      
-        self.fold_score_progress = []
+        self.fold_score = []
 
-        for train_index, test_index in split.split(inputset):    
+        for train_index, test_index in split.split(inputset):             
+            self.create_model_wrapper(model_parameters)
+            
             in_train, in_test = inputset[train_index], inputset[test_index]
             out_train, out_test = outputset[train_index], outputset[test_index]
-            
+
             fitted = self.model.fit(in_train, out_train, epochs=self.epochs, batch_size=self.batch_size)
             self.store_fit_results(fitted)
             
             scores = self.model.evaluate(in_test, out_test)
-            self.fold_score_progress.append(scores)
-        return numpy.mean(a=self.fold_score_progress, axis=0)
+            print(scores)
+            
+            self.fold_score.append(scores)
+         
+        return numpy.mean(a=self.fold_score, axis=0)
+    
+    
+    def learning_rate(self, inputset, outputset, split, epochs, batch_size, model_parameters=dict()):
+        self.n_splits = split.n_splits
+        self.epochs = epochs
+        self.batch_size = batch_size      
+        self.fold_score = []
 
+        for train_index, test_index in split.split(inputset):             
+            self.create_model_wrapper(model_parameters)
+            
+            in_train, in_test = inputset[train_index], inputset[test_index]
+            out_train, out_test = outputset[train_index], outputset[test_index]
 
+            
+            divisions = utils.generate_subset_divisions(10, len(in_train))
+            in_train_subsets = numpy.split(ary=in_train, indices_or_sections=divisions)
+            out_train_subsets = numpy.split(ary=out_train, indices_or_sections=divisions)
 
-
+            scores_arr = []
+            for in_subset, out_subset in zip(in_train_subsets, out_train_subsets):
+                self.model.fit(in_subset, out_subset, epochs=epochs, batch_size=batch_size)
+            
+                scores = self.model.evaluate(in_test, out_test)
+                scores_arr.append(scores)
+                
+            self.fold_score.append(scores_arr)     
+                
+        return numpy.mean(a=self.fold_score, axis=0)        
+    
+    
+    
     def save_prediction_to_file(self, inputset, metadata, filename):
         '''
         Spocte predikci modelu pro všechny radky v inputset,
@@ -171,7 +199,7 @@ class Estimator:
     
     
     
-    
+   
     def draw_loss_and_metrics(self, ignore_first_n=0, nrows=1, ncols=2, size=(16,6)):
         '''
         Nakresli vyvoj metrik (a ztratove funkce) do zvlastnich grafu v jednom obrazku.

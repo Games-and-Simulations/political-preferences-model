@@ -18,6 +18,16 @@ def create_data_subset(inputset, outputset, subset=0, seed=False):
     return inputset, outputset, len(inputset)
 
 
+def generate_subset_divisions(n_divisions, set_size):
+    '''
+    Generuj body podel kterych bude rozdeleno pole.
+    '''
+    res = []
+    for i in range(1, n_divisions):
+       res.append(round((i/n_divisions) * set_size))
+    return res
+
+
 def generate_graphs(estimator, modelname):
     
     base = 'graphs/categorical_crossentropy/' + modelname
@@ -37,4 +47,10 @@ def generate_graphs(estimator, modelname):
     estimator.draw_metric(metric='root_mean_squared_error', ylim=(0.025, 0.05), filepath= base + '_ylim(0.025,0.05)')
     estimator.draw_metric_across_folds(metric='root_mean_squared_error', filepath= base + '_10fold')
     estimator.draw_metric_across_folds(metric='root_mean_squared_error', ylim=(0.025, 0.05), filepath= base + '_10fold_ylim(0.025,0.05)')
+
+
+
+
+
+
 
