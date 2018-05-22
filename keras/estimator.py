@@ -9,13 +9,11 @@ import inspect
 
 class Estimator:
     
-    def __init__(self, create_model, description=''):
-        self.description = description  # voluntary description of data/model
+    def __init__(self, create_model):
         self.metrics_record = {}
         self.fold_score = []   # progress of fold evaluation     
-        self.fold_scores = []
         self.create_model = create_model
-
+        self.model = None
 
 
     def save_model_to_file(self, filename='model_'):
@@ -34,7 +32,6 @@ class Estimator:
 
 
 
-
     def create_model_wrapper(self, model_parameters=dict()):
         '''
         Wrapper function for create_model function.
@@ -45,10 +42,20 @@ class Estimator:
         self.model = getattr(self, 'create_model')(**model_parameters)
         return self.model
     
-    
+
+    def train(self, inputset, outputset, epochs, batch_size, model_parameters=dict()):
+        self.epochs = epochs
+        self.batch_size = batch_size
+                
+        self.create_model_wrapper(model_parameters)
+            
+        fitted = self.model.fit(inputset, outputset, epochs=epochs, batch_size=batch_size)
+        self.store_fit_results(fitted)
+         
+        return self.model             
 
 
-    def train(self, inputset, outputset, split, epochs, batch_size, model_parameters=dict()):
+    def train_crossval(self, inputset, outputset, split, epochs, batch_size, model_parameters=dict()):
         '''
         Train model created throught self.create_model function with given parameters.
 
@@ -75,7 +82,9 @@ class Estimator:
         return numpy.mean(a=self.fold_score, axis=0)
     
     
-    def learning_rate(self, inputset, outputset, split, epochs, batch_size, model_parameters=dict()):
+    
+    def learning_rate(self, inputset, outputset, split, epochs, batch_size, 
+                      n_divisions=10, model_parameters=dict()):
         self.n_splits = split.n_splits
         self.epochs = epochs
         self.batch_size = batch_size      
@@ -88,7 +97,7 @@ class Estimator:
             out_train, out_test = outputset[train_index], outputset[test_index]
 
             
-            divisions = utils.generate_subset_divisions(10, len(in_train))
+            divisions = utils.generate_subset_divisions(n_divisions, len(in_train))
             in_train_subsets = numpy.split(ary=in_train, indices_or_sections=divisions)
             out_train_subsets = numpy.split(ary=out_train, indices_or_sections=divisions)
 
@@ -118,86 +127,7 @@ class Estimator:
         result = numpy.dot(result, 100)
         result = numpy.concatenate((metadata, result), axis=1)
         numpy.savetxt(fname=filename, X=result, fmt='%0.2f' , delimiter=',')
-        return result
-
-
-
-
-    def get_LR(self, inputset, outputset, subset_in_perc, test_size, split, epochs, batch_size, model_parameters=dict()):
-        '''
-        Trenuje identicky model vicekrat na ruznych podmnozinach trenovacich dat.
-        
-        Nejprve rozdeli data na testovaci a trenovaci cast podle parametru test_size.
-        
-        
-        :param inputset: Vstupni data (priklady).
-        :param outputset: Vystupni data (priklady).
-        :param subset_in_perc: List hodnot pomeru podmnoziny vuci celkove mnozine dat (v procentech). 
-            Napr. range(10,101,10
-        :param test_size: Pomer testovaci mnoziny vuci celku.
-        :param split: Splitter objekt z sklearn.model_selection, ktery ridi rozdeleni
-            mnoziny dat pro ucely cross-validace.
-        '''
-        self.create_model_wrapper(model_parameters)
-        self.epochs = epochs
-        self.batch_size = batch_size
-        self.n_splits = split.n_splits
-        nMetrics = 1 + len(self.model.metrics)
-        shuffle_split = ShuffleSplit(n_splits=1, test_size=test_size)
-        subset_score_progress = numpy.array([])
-        
-        # rozdel data na teninkovou a testovaci cast
-        for train_idx, test_idx in shuffle_split.split(inputset):
-            print('Training set: ', len(train_idx), '| Test set: ', len(test_idx))
-            in_train, in_test = inputset[train_idx], inputset[test_idx]
-            out_train, out_test = outputset[train_idx], outputset[test_idx]
-                
-            for share in subset_in_perc:
-                in_subset, out_subset, set_size = utils.create_data_subset(in_train, out_train, subset=share)
-                self.train(in_subset, out_subset, split, epochs, batch_size, model_parameters)
-                
-                scores = self.model.evaluate(in_test, out_test)
-                subset_score_progress = numpy.append(subset_score_progress, numpy.array(scores))
-            
-        subset_score_progress = subset_score_progress.reshape(int(subset_score_progress.size / nMetrics), nMetrics)
-        return subset_score_progress
-
-
-
-
-    def plot_LR(self, scores1, subset_sizes, scores2=[], scores3=[],
-                label1='', label2='', label3='', subset_sizes2=[], subset_sizes3=[], filepath=False):
-        '''
-        Evalute scores for subsets of given sizes and plot them into graph.
-        This shows how the prediction changes with change in size of the dataset. (learning rate)
-        The graph contains 3 lines - mean score on cross-validation test data,
-        score on subsets, score on the entire dataset 
-        '''
-        
-        nMetrics = 1 + len(self.model.metrics)
-        metric_functions = self.model.metrics
-        metric_functions.insert(0, self.model.loss)
-
-        fig, axes = plt.subplots(nrows=1, ncols=nMetrics)
-        fig.set_size_inches(16,4)
-        axes = axes.flatten().tolist()
-        for idx, metric_fun in enumerate(metric_functions):
-            axes[idx].plot(subset_sizes, scores1[:,idx], 'r', label=label1)
-            if len(scores2) > 0:
-                axes[idx].plot(subset_sizes2, scores2[:,idx], 'b', label=label2)
-            if len(scores3) > 0:
-                axes[idx].plot(subset_sizes3, scores3[:,idx], 'g', label=label3)
-            axes[idx].set_xlabel('Podíl použité trénovací množiny (v %)')
-            axes[idx].set_ylabel(str(metric_fun.__name__))
-            box = axes[idx].get_position()
-            axes[idx].set_position([box.x0, box.y0 + box.height * 0.2,
-                 box.width, box.height * 0.8])
-        fig.legend(loc='lower center')
-        plt.show()
-        if filepath:
-            fig.savefig(filepath + '.png')
-    
-    
+        return result  
     
    
     def draw_loss_and_metrics(self, ignore_first_n=0, nrows=1, ncols=2, size=(16,6)):
