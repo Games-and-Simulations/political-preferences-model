@@ -22,10 +22,9 @@ class Estimator:
         
         file = open('model/'+ filename + datestring + '.txt', 'w')        
         try:
-            file.write('Epochs: ' + str(self.epochs) + ', Batchsize: ' + str(self.batch_size) +
-                       ', n_Splits: ' + str(self.n_splits) + '\n')
+            file.write('Epochs: ' + str(self.epochs) + ', Batchsize: ' + str(self.batch_size) + '\n')
         except AttributeError:
-            file.write('Epoch,Batchsize,n_Splits info not recorded in estimator')
+            file.write('Epoch,Batchsize info not recorded in estimator')
         for line in inspect.getsourcelines(self.create_model)[0]: 
             file.write(line)
         file.close()
